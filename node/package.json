@@ -1,0 +1,13 @@
+{
+  "name": "detectify_api_example",
+  "version": "1.0.0",
+  "description": "Detectify APIv2 Node example",
+  "author": "Detectify <hello@detectify.com>",
+  "main": "detectify.js",
+  "scripts": {
+    "start": "node detectify.js"
+  },
+  "dependencies": {
+    "node-fetch": "^1.7.3"
+  }
+}

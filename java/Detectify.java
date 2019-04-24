@@ -18,7 +18,7 @@ public class Detectify {
     /**
      * Detectify API endpoint, no trailing slash
      */
-    private static final String Endpoint = "https://api.detectify.com/rest/v2";
+    private static final String Endpoint = "https://api.detectify.com/rest";
 
     private String apiKey;
     private String secretKey;
@@ -72,7 +72,7 @@ public class Detectify {
         Date timestamp = new Date();
 
         // Format API request URL
-        String path = String.format("/scans/%s/", scanProfile);
+        String path = String.format("/v2/scans/%s/", scanProfile);
         String method = "POST";
 
         URL url;
@@ -137,7 +137,7 @@ public class Detectify {
         Date timestamp = new Date();
 
         // Format API request URL
-        String path = String.format("/scans/%s/", scanProfile);
+        String path = String.format("/v2/scans/%s/", scanProfile);
         String method = "GET";
 
         URL url;

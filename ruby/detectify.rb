@@ -7,7 +7,7 @@ require 'Base64'
 
 module Detectify
   # Base endpoint to the Detectify API, no trailing slash
-  ENDPOINT = 'https://api.detectify.com/rest/v2'.freeze
+  ENDPOINT = 'https://api.detectify.com/rest'.freeze
 
   # Generates signature headers. Returns a map of headers to pass along with the call.
   def self.signature(api_key, secret_key, method, url, timestamp, body='')
@@ -40,7 +40,7 @@ module Detectify
   # Starts a new scan on the provided scan profile. Returns true if the scan was started,
   # false if it was not started.
   def self.start_scan(scan_profile, api_key, secret_key=nil)
-    path = "/scans/#{scan_profile}/"
+    path = "/v2/scans/#{scan_profile}/"
     url = "#{ENDPOINT}#{path}"
 
     # Create headers for the call
@@ -83,7 +83,7 @@ module Detectify
 
   # Prints the status of a currently running scan.
   def self.scan_status(scan_profile, api_key, secret_key = nil)
-    path = "/scans/#{scan_profile}/"
+    path = "/v2/scans/#{scan_profile}/"
     url = "#{ENDPOINT}#{path}"
 
     # Create headers for the call

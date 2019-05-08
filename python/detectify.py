@@ -6,7 +6,7 @@ from urllib.error import URLError
 import time
 
 # Detectify public API endpoint, no trailing slash
-ENDPOINT = 'https://api.detectify.com/rest/v2'
+ENDPOINT = 'https://api.detectify.com/rest'
 
 
 def make_headers(api_key, secret_key, method, path, timestamp, body=None):
@@ -35,7 +35,7 @@ def make_signature(api_key, secret_key, method, path, timestamp, body=None):
 
 
 def start_scan(scan_profile, api_key, secret_key):
-    path = f"/scans/{scan_profile}/"
+    path = f"/v2/scans/{scan_profile}/"
     url = f"{ENDPOINT}{path}"
     timestamp = int(time.time())
     headers = make_headers(api_key, secret_key, 'POST', path, timestamp)
@@ -64,7 +64,7 @@ def start_scan(scan_profile, api_key, secret_key):
 
 
 def scan_status(scan_profile, api_key, secret_key):
-    path = f"/scans/{scan_profile}/"
+    path = f"/v2/scans/{scan_profile}/"
     url = f"{ENDPOINT}{path}"
     timestamp = int(time.time())
     headers = make_headers(api_key, secret_key, 'GET', path, timestamp)

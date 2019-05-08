@@ -6,7 +6,7 @@ include('httpful.phar');
 class Detectify
 {
     // Detectify API endpoint, no trailing slash
-    private const ENDPOINT = "https://api.detectify.com/rest/v2";
+    private const ENDPOINT = "https://api.detectify.com/rest";
 
     private $api_key;
     private $secret_key;
@@ -48,7 +48,7 @@ class Detectify
      */
     function startScan($scan_profile)
     {
-        $path = "/scans/$scan_profile/";
+        $path = "/v2/scans/$scan_profile/";
         $url = self::ENDPOINT . $path;
         $timestamp = time();
 
@@ -94,7 +94,7 @@ class Detectify
      */
     function scanStatus($scan_profile)
     {
-        $path = "/scans/$scan_profile/";
+        $path = "/v2/scans/$scan_profile/";
         $url = self::ENDPOINT . $path;
         $timestamp = time();
 

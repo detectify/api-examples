@@ -4,7 +4,7 @@ const crypto = require('crypto')
 const fetch = require('node-fetch')
 
 // The endpoint to Detectify's API, no trailing slash
-const DetectifyEndpoint = 'https://api.detectify.com/rest/v2'
+const DetectifyEndpoint = 'https://api.detectify.com/rest'
 
 // Generate the headers to use for API calls. If `secretKey` is not null, its value will be used to create
 // the signature headers. `body` should be omitted unless the call requires a JSON payload.
@@ -43,7 +43,7 @@ function signatureHeaders(apiKey, secretKey, method, path, timestamp, body) {
 
 // Starts a scan for the provided scan profile. Returns true if the scan was started, false if not.
 function startScan(scanProfile, apiKey, secretKey) {
-    const path = `/scans/${scanProfile}/`
+    const path = `/v2/scans/${scanProfile}/`
     const url = `${DetectifyEndpoint}${path}`
     const timestamp = Math.floor(new Date() / 1000)
 
@@ -90,7 +90,7 @@ function startScan(scanProfile, apiKey, secretKey) {
 
 // Returns the scan status as JSON if the scan is running.
 function scanStatus(scanProfile, apiKey, secretKey) {
-    const path = `/scans/${scanProfile}/`
+    const path = `/v2/scans/${scanProfile}/`
     const url = `${DetectifyEndpoint}${path}`
     const timestamp = Math.floor(new Date() / 1000)
 

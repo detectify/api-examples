@@ -37,7 +37,7 @@ namespace DetectifyExample
         /// <summary>
         /// Detectify API endpoint, without a trailing slash.
         /// </summary>
-        private const string Endpoint = "https://api.detectify.com/rest/v2";
+        private const string Endpoint = "https://api.detectify.com/rest";
 
         private string ApiKey { get; }
         private string SecretKey { get; }
@@ -84,7 +84,7 @@ namespace DetectifyExample
         /// <returns>Returns true if a scan was started, false if not.</returns>
         public async Task<bool> StartScanAsync(string scanProfile)
         {
-            var path = $"/scans/{scanProfile}/";
+            var path = $"/v2/scans/{scanProfile}/";
             var url = $"{Endpoint}{path}";
             var timestamp = DateTime.UtcNow;
 
@@ -139,7 +139,7 @@ namespace DetectifyExample
         /// <param name="scanProfile">The scan profile token to check scan status for.</param>
         public async Task ScanStatusAsync(string scanProfile)
         {
-            var path = $"/scans/{scanProfile}/";
+            var path = $"/v2/scans/{scanProfile}/";
             var url = $"{Endpoint}{path}";
             var timestamp = DateTime.UtcNow;
             

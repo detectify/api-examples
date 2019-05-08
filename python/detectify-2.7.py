@@ -11,7 +11,7 @@ import time
 
 # Detectify public API endpoint, no trailing slash
 # Python 2.7
-ENDPOINT = 'https://api.detectify.com/rest/v2'
+ENDPOINT = 'https://api.detectify.com/rest'
 
 # API response codes
 response_codes = {
@@ -72,37 +72,37 @@ def request(api_key, secret_key, path, method):
     return
 
 def start_scan(scan_profile, api_key, secret_key):
-    path = "/scans/"+scan_profile+"/"
+    path = "/v2/scans/"+scan_profile+"/"
     req = request(api_key, secret_key, path, 'POST')
     if req != None:
         print req.text
 
 def stop_scan(scan_profile, api_key, secret_key):
-    path = "/scans/"+scan_profile+"/"
+    path = "/v2/scans/"+scan_profile+"/"
     req = request(api_key, secret_key, path, 'DELETE')
     if req != None:
         print req.text
 
 def scan_status(scan_profile, api_key, secret_key):
-    path = "/scans/"+scan_profile+"/"
+    path = "/v2/scans/"+scan_profile+"/"
     req = request(api_key, secret_key, path, 'GET')
     if req != None:
         print req.text
 
 def get_domains(api_key, secret_key):
-    path = "/domains/"
+    path = "/v2/domains/"
     req = request(api_key, secret_key, path, 'GET')
     if req != None:
         print eval(req.text)
 
 def get_domain_profiles(api_key, secret_key, domain_token):
-    path = "/profiles/"+domain_token+"/"
+    path = "/v2/profiles/"+domain_token+"/"
     req = request(api_key, secret_key, path, 'GET')
     if req != None:
         print eval(req.text)
 
 def get_all_profiles(api_key, secret_key):
-    path = "/profiles/"
+    path = "/v2/profiles/"
     req = request(api_key, secret_key, path, 'GET')
     if req != None:
         return eval(req.text)

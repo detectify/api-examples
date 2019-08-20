@@ -35,3 +35,5 @@ For more information about the fixed issues, a CSV can be found in this director
 12. Running "12" will allow you to update the scan schedule for your scan profiles. 
 
 13. Will remove the scan schedule for all profiles within a team. 
+
+14. This option allow you to enable or disable Asset Monitoring across all of your asset. Note that default setting for this when enabling is to use both brute forcing and scraping. See https://developer.detectify.com/#asset-inventory-manage-asset-settings-put for more information. 

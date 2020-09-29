@@ -8,6 +8,8 @@ from hashlib import sha256
 from base64 import b64encode, b64decode
 import sys
 import time
+import json
+from os import walk
 
 # Detectify public API endpoint, no trailing slash
 # Python 2.7
@@ -93,32 +95,102 @@ def get_domains(api_key, secret_key):
     path = "/v2/domains/"
     req = request(api_key, secret_key, path, 'GET')
     if req != None:
-        print eval(req.text)
+        print json.loads(req.text)
 
 def get_domain_profiles(api_key, secret_key, domain_token):
     path = "/v2/profiles/"+domain_token+"/"
     req = request(api_key, secret_key, path, 'GET')
     if req != None:
-        print eval(req.text)
+        print json.loads(req.text)
 
 def get_all_profiles(api_key, secret_key):
     path = "/v2/profiles/"
     req = request(api_key, secret_key, path, 'GET')
     if req != None:
-        return eval(req.text)
+        return json.loads(req.text)
 
 def profiles_scan_status(api_key, secret_key):
-    profiles = get_all_profiles(api_key, secret_key);
+    profiles = get_all_profiles(api_key, secret_key)
     if profiles != None:
         for scan in profiles:
             #print i["token"]
-            scan_status(scan["token"], api_key, "")
+            scan_status(scan["token"], api_key, secret_key)
 
+def get_scan_reports(api_key, secret_key, profile):
+    path = "/reports/"+profile+"/"
+    req = request(api_key, secret_key, path, 'GET')
+    if req != None:
+        return json.loads(req.text)
+
+def get_findings_report(api_key, secret_key, profile, report):
+    path = "/fullreports/"+ profile +"/"+report+"/"
+    req = request(api_key, secret_key, path, 'GET')
+    if req != None:
+        return json.loads(req.text)
+
+def profiles_findings(api_key, secret_key):
+    #We get all scan profiles
+    profiles = get_all_profiles(api_key, secret_key)
+    reports = []
+    all_reports = {}
+
+    #We get all the reports of all profiles, and
+    #construct a dict with that info
+    for profile in profiles:
+        #reports on profile
+        reports = get_scan_reports(api_key, secret_key, profile["token"])
+        all_reports[profile["endpoint"]] = {"token": profile["token"], "reports": list([x["token"] for x in reports])}
+    
+    total = 0
+    for i in all_reports.keys():
+        total += len(all_reports[i]["reports"])
+    
+    #Gets the files already downloaded to skip them
+    report_files = []
+    for (dirpath, dirnames, filenames) in walk("."):
+        report_files.extend(filenames)
+        report_files = [files for files in report_files if ".json" in files]
+        break
+    
+    #Deletes the reports already downloaded from the download list
+    for files in report_files:
+        scan, report = (files.split(".json")[0]).split("_")
+        if scan in all_reports.keys():
+            if report in all_reports[scan]["reports"]:
+                all_reports[scan]["reports"].remove(report)
+            else:
+                print "Report %s not in profile %s" % (report, scan)        
+        else:
+            print "Profile not in list"
+
+    to_download = 0
+    for i in all_reports.keys():
+        to_download += len(all_reports[i]["reports"])
+    print "To download "+str(to_download)+"/"+str(total)
+   
+    total = to_download
+    to_download = 0
+
+    #Downloads one by one the reports and saves them to disk
+    for profile in all_reports.keys():
+        for report in all_reports[profile]["reports"]:
+            to_download+=1
+            filename = profile+"_"+report+".json"
+            print "Downloading "+str(to_download)+"/"+str(total)
+            file = open(filename,"w")
+            file.write(json.dumps(get_findings_report(api_key, secret_key, all_reports[profile]["token"], report)))
+            file.close()
+
+    print "[DONE] All reports downloaded"
+            
+    
+        
 
 secretKey = 'SGVsbG8sIHdvcmxkISBJIGFtIGEgdGVhcG90IQ=='
 scanProfile = ''
 apiKey = ''
 domainToken = ''
+
 
 
 #ALL TESTS
@@ -138,4 +210,6 @@ print "[TEST] Get Domain Profiles"
 get_domain_profiles(apiKey, secretKey, domainToken)
 print "[TEST] Get Profiles Scan Status"
 #profile_scans_status includes the test of get_all_profiles and scan_status functions
-profiles_scan_status(apiKey, secretKey)
+#profiles_scan_status(apiKey, secretKey)
+#Gets all the reports of all scans and saves to JSON
+#profiles_findings(apiKey, secretKey)

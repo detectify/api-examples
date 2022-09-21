@@ -70,6 +70,9 @@ def request(apiKey, secret_key, path, method, payload={}):
 		elif method == 'POST':
 			print(json.dumps(payload))
 			return check_request_error(requests.post(url, data=json.dumps(payload), headers=headers))
+		elif method == 'PUT':
+			print(json.dumps(payload))
+			return check_request_error(requests.put(url, data=json.dumps(payload), headers=headers))
 		elif method == 'DELETE':
 			return check_request_error(requests.delete(url, headers=headers))
 	except requests.exceptions.RequestException as e:
@@ -147,7 +150,6 @@ def add_scan_profile_csv(apiKey, secret_key):
 
 def update_scan_schedule(apiKey, secret_key,frequency):
 	all_profiles=get_all_profiles(apiKey, secret_key)
-	print(frequency)
 	for item in all_profiles:
 		scanProfile=item["token"]
 		path = "/scanschedules/"+scanProfile+"/"
@@ -156,6 +158,26 @@ def update_scan_schedule(apiKey, secret_key,frequency):
 		})
 		if req != None:
 			print(item["endpoint"] + " - scan schedule updated to " + frequency + "\n")
+
+def update_asset_settings(apiKey, secret_key, monitoring):
+	all_domains = get_domains(apiKey, secretKey)
+	for i in all_domains:
+		domainToken=i["token"]
+		print(domainToken)
+		path="/domains/"+domainToken+"/settings/"
+		req = request(apiKey, secret_key, path, 'PUT', {
+			'monitoring': monitoring,
+			'scrape': monitoring,
+			'brute_force': monitoring
+		})
+		if req != None:
+			if monitoring == True:
+				status="enabled"
+				print(i["name"] + " - Asset Monitoring " + status + "\n")
+			elif monitoring == False:
+				status="disabled"
+				print(i["name"] + " - Asset Monitoring " + status + "\n")
+
 
 def delete_scan_schedule(apiKey, secret_key):
 	all_profiles=get_all_profiles(apiKey, secret_key)
@@ -209,7 +231,7 @@ def get_findings_for_scan_profile(scan_profile, apiKey, secret_key):
 	path = "/findings/" + scan_profile + "/?severity=high&from=" + str(int(time.time()-time_interval*86400)) + "&to=" + str(int(time.time()))
 	req = request(apiKey, secret_key, path, 'GET', 'No reports found for scanprofile: ' + scan_profile)
 	if req != None:
-		return eval(req.text)
+		return json.loads(req.text)
 
 def get_reports(scan_profile, apiKey, secret_key):
 	path = "/reports/" + scan_profile + "/?from=" + str(int(time.time()-time_interval*86400)) + "&to=" + str(int(time.time()))
@@ -462,7 +484,9 @@ while True:
 	print("10. DELETING all scan profiles")
 	print("11. Get info about remediation time for past " + str(time_interval) + " days")
 	print("12. Updating scan schedule(s) for scan profiles")
-	print("13. Removing scan schedule(s) for scan profiles"+ "\n")
+	print("13. Removing scan schedule(s) for scan profiles")
+	print("14. Enable/disable Asset Monitoring"+ "\n")
+
 
 
 
@@ -771,3 +795,33 @@ while True:
 			while action_team < 1 or action_team > len(df):
 				action_team = int(raw_input("Select to which team you want to add the domain by specifying one of the integers: "))
 			delete_scan_schedule(df.iloc[action_team-1,1], secretKey)
+
+	elif action == '14':
+		print("Enable/disable Asset Monitoring (AM) for your assets. " "\n")
+		with open('apikeys.csv', 'rU') as csvfile:
+			#Skipping the title and first row in CSV
+			next(csvfile)
+			#Reads from CSV (apikeys.csv) in the same folder
+			apireader = csv.reader(csvfile, delimiter=';')
+			df=pd.read_csv('apikeys.csv', delimiter=';')
+			print("To which team do you wish to Enable/disable the Asset Monitoring?")
+			x=1
+			for row in apireader:
+				apiKey = row[1]
+				print("\n"+"TEAM: "+ row[0] + " (" + str(x) + ")")
+				x=x+1
+			
+
+			while action_team < 1 or action_team > len(df):
+				action_team = int(raw_input("Select to which team you want to change the asset setting: "))
+			print("Select if you want to disable or enable Asset Monitoring across all of your assets: " + "\n")
+			print("Enable (1)")
+			print("Disable (2)")
+			setting = int(raw_input("Enter your option: "))
+					
+			if setting == 1:
+				monitoring = True
+			elif setting == 2:
+				monitoring = False
+			update_asset_settings(df.iloc[action_team-1,1], secretKey, monitoring)
+		
